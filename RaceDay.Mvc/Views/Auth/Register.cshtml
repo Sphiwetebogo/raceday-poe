@@ -1,0 +1,60 @@
+@model RegisterVm
+@{ ViewData["Title"] = "Register"; }
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card rd-card p-4">
+            <h2 class="mb-3">Create your RaceDay account</h2>
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <div class="form-text">At least 8 characters, with a letter and a number.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="RoleId" class="form-label">I am a...</label>
+                    <select asp-for="RoleId" class="form-select" id="roleSelect">
+                        <option value="2">Participant (enter events)</option>
+                        <option value="1">Organiser (manage events)</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="organiserCodeBox" style="display:none">
+                    <label asp-for="OrganiserCode" class="form-label"></label>
+                    <input asp-for="OrganiserCode" class="form-control" autocomplete="off" />
+                    <span asp-validation-for="OrganiserCode" class="text-danger"></span>
+                    <div class="form-text">Organisers need the secret code issued by the RaceDay system owner.</div>
+                </div>
+                <button class="btn btn-rd w-100" type="submit">Register</button>
+            </form>
+            <p class="mt-3 mb-0 text-center">Already registered? <a asp-action="Login">Login</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const roleSelect = document.getElementById('roleSelect');
+        const box = document.getElementById('organiserCodeBox');
+        function toggleCode() { box.style.display = roleSelect.value === '1' ? 'block' : 'none'; }
+        roleSelect.addEventListener('change', toggleCode);
+        toggleCode();
+    </script>
+}

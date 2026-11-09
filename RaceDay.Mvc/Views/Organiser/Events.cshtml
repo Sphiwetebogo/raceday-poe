@@ -1,0 +1,45 @@
+@model List<EventResponse>
+@{ ViewData["Title"] = "Manage Events"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Manage Events</h1>
+    <a class="btn btn-rd-accent" asp-action="CreateEvent"><i class="bi bi-plus-lg"></i> New event</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No events yet. Create your first event to get started.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var e in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card rd-card h-100">
+                    @if (!string.IsNullOrWhiteSpace(e.BannerImageUrl))
+                    {
+                        <img src="@e.BannerImageUrl" class="card-img-top rd-banner" alt="@e.Title event banner" />
+                    }
+                    else
+                    {
+                        <div class="rd-banner rd-banner-placeholder"><i class="bi bi-trophy"></i></div>
+                    }
+                    <div class="card-body">
+                        <span class="badge rd-type-badge rd-type-@e.EventType.ToLowerInvariant() mb-2">@e.EventType</span>
+                        <h5 class="card-title">@e.Title</h5>
+                        <p class="text-muted mb-1"><i class="bi bi-calendar3"></i> @e.EventDate.ToString("dd MMM yyyy") &middot; <i class="bi bi-geo-alt"></i> @e.Location</p>
+                        <p class="text-muted mb-0"><i class="bi bi-signpost-split"></i> @e.DistanceKM.ToString("0.##") km &middot; <i class="bi bi-people"></i> @e.EnrolmentCount enrolled</p>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-rd" asp-action="EditEvent" asp-route-id="@e.EventId">Edit</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Categories" asp-route-id="@e.EventId">Categories</a>
+                        <form asp-action="DeleteEvent" asp-route-id="@e.EventId" method="post"
+                              onsubmit="return confirm('Delete this event with all its categories, enrolments and results? This cannot be undone.');">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

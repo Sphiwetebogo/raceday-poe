@@ -1,0 +1,43 @@
+@model OrganiserDashboardVm
+@{ ViewData["Title"] = "Organiser Dashboard"; }
+<h1 class="mb-4">Organiser Dashboard</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4"><div class="rd-stat"><div class="rd-stat-num">@Model.TotalEvents</div><div>Total events</div></div></div>
+    <div class="col-12 col-md-4"><div class="rd-stat"><div class="rd-stat-num">@Model.UpcomingEvents</div><div>Upcoming events</div></div></div>
+    <div class="col-12 col-md-4"><div class="rd-stat"><div class="rd-stat-num">@Model.TotalEnrolments</div><div>Active enrolments</div></div></div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="rd-section-title mb-0">Your events</h2>
+    <a class="btn btn-rd-accent" asp-action="CreateEvent"><i class="bi bi-plus-lg"></i> New event</a>
+</div>
+
+@if (!Model.Events.Any())
+{
+    <p class="text-muted mt-3">You have not created any events yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle rd-table">
+            <thead><tr><th>Event</th><th>Date</th><th>Location</th><th class="text-center">Enrolments</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var e in Model.Events)
+            {
+                bool upcoming = e.EventDate >= DateTime.Now;
+                <tr>
+                    <td><strong>@e.Title</strong></td>
+                    <td>@e.EventDate.ToString("dd MMM yyyy") @if (upcoming) { <span class="badge status-confirmed">Upcoming</span> } else { <span class="badge status-cancelled">Past</span> }</td>
+                    <td>@e.Location</td>
+                    <td class="text-center"><span class="badge rd-count">@e.EnrolmentCount</span></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Enrolments" asp-route-eventId="@e.EventId">Enrolments</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Results" asp-route-eventId="@e.EventId">Results</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

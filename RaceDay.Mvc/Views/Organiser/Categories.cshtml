@@ -1,0 +1,54 @@
+@model CategoriesVm
+@{ ViewData["Title"] = "Categories"; }
+<h1>Categories <small class="text-muted">&ndash; @Model.Event.Title</small></h1>
+<a asp-action="Events" class="btn btn-link ps-0 mb-3">&larr; Back to events</a>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        @if (!Model.Event.Categories.Any())
+        {
+            <p class="text-muted">No categories yet. Participants need at least one category to enter, so add the first one.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle rd-table">
+                    <thead><tr><th>Category</th><th>Distance</th><th>Fee</th></tr></thead>
+                    <tbody>
+                    @foreach (var c in Model.Event.Categories)
+                    {
+                        <tr>
+                            <td><strong>@c.CategoryName</strong></td>
+                            <td>@c.DistanceKM.ToString("0.##") km</td>
+                            <td>@(c.Fee == 0 ? "Free" : "R " + c.Fee.ToString("0.00"))</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="col-lg-5">
+        <div class="card rd-card p-3">
+            <h2 class="h5">Add category</h2>
+            <form asp-action="AddCategory" method="post">
+                <input type="hidden" name="id" value="@Model.Event.EventId" />
+                <div class="mb-3">
+                    <label class="form-label" for="CategoryName">Name</label>
+                    <input class="form-control" id="CategoryName" name="CategoryName" placeholder="e.g. 10km Open or Under 20" required maxlength="100" />
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="DistanceKM">Distance (km)</label>
+                        <input class="form-control" id="DistanceKM" name="DistanceKM" type="number" step="0.1" min="0.1" value="@Model.Event.DistanceKM.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)" required />
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="Fee">Fee (R)</label>
+                        <input class="form-control" id="Fee" name="Fee" type="number" step="0.01" min="0" value="0" required />
+                    </div>
+                </div>
+                <button class="btn btn-rd" type="submit">Add category</button>
+            </form>
+        </div>
+    </div>
+</div>

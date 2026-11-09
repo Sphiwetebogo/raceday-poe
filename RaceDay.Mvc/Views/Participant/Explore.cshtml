@@ -1,0 +1,35 @@
+@model List<EventResponse>
+@{ ViewData["Title"] = "Explore Events"; }
+<h1 class="mb-3">Explore events</h1>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-12 col-md-5">
+        <input name="search" value="@ViewBag.Search" class="form-control" placeholder="Search by name or location" aria-label="Search events" />
+    </div>
+    <div class="col-8 col-md-3">
+        <select name="type" class="form-select" aria-label="Event type">
+            <option value="">All types</option>
+            @foreach (var t in new[] { "Run", "Walk", "Cycle" })
+            {
+                <option value="@t" selected="@((string?)ViewBag.Type == t)">@t</option>
+            }
+        </select>
+    </div>
+    <div class="col-4 col-md-auto">
+        <button class="btn btn-rd" type="submit">Filter</button>
+        <a class="btn btn-link" asp-action="Explore">Clear</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No upcoming events match your search.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var e in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">@await Html.PartialAsync("_EventCard", e)</div>
+        }
+    </div>
+}

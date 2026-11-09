@@ -1,0 +1,29 @@
+@model List<EventResponse>
+@{
+    ViewData["Title"] = "Welcome";
+    bool loggedIn = Context.Session.GetInt32("UserId") != null;
+}
+<section class="rd-hero text-center">
+    <h1>Find your next <span>RaceDay</span></h1>
+    <p class="lead">Discover running, walking and cycling events. Enter in seconds. Track every result.</p>
+    @if (!loggedIn)
+    {
+        <a class="btn btn-rd-accent btn-lg me-2" asp-controller="Auth" asp-action="Register">Join RaceDay</a>
+        <a class="btn btn-outline-light btn-lg" asp-controller="Auth" asp-action="Login">Login</a>
+    }
+    else
+    {
+        <a class="btn btn-rd-accent btn-lg" asp-controller="@(Context.Session.GetString("Role") == "Organiser" ? "Organiser" : "Participant")" asp-action="Index">Go to my RaceDay</a>
+    }
+</section>
+
+@if (Model.Any())
+{
+    <h2 class="rd-section-title mt-5">Coming up</h2>
+    <div class="row g-4">
+        @foreach (var e in Model)
+        {
+            <div class="col-12 col-md-6 col-lg-4">@await Html.PartialAsync("_EventCard", e)</div>
+        }
+    </div>
+}

@@ -1,0 +1,54 @@
+@model EnrolmentsPageVm
+@{ ViewData["Title"] = "Enrolments"; }
+<h1>Enrolments</h1>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-6">
+        <select name="eventId" class="form-select" onchange="this.form.submit()" aria-label="Choose an event">
+            <option value="">Select an event...</option>
+            @foreach (var e in Model.Events)
+            {
+                <option value="@e.EventId" selected="@(Model.SelectedEventId == e.EventId)">@e.Title (@e.EventDate.ToString("dd MMM yyyy"))</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-rd" type="submit">View</button></div>
+</form>
+
+@if (!Model.SelectedEventId.HasValue)
+{
+    <p class="text-muted">Choose an event to see who has entered.</p>
+}
+else if (!Model.Items.Any())
+{
+    <p class="text-muted">No participants have entered this event yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle rd-table">
+            <thead><tr><th>Participant</th><th>Email</th><th>Category</th><th>Entered</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var i in Model.Items)
+            {
+                <tr>
+                    <td>@i.ParticipantName</td>
+                    <td>@i.ParticipantEmail</td>
+                    <td>@i.CategoryName</td>
+                    <td>@i.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                    <td><partial name="_StatusBadge" model="i.PaymentStatus" /></td>
+                    <td class="text-end">
+                        @if (string.Equals(i.PaymentStatus, "Pending", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <form asp-action="ConfirmEnrolment" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@i.EnrolmentId" />
+                                <input type="hidden" name="eventId" value="@Model.SelectedEventId" />
+                                <button class="btn btn-sm btn-rd" type="submit">Confirm</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

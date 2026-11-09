@@ -1,0 +1,12 @@
+@model EventFormVm
+@{ ViewData["Title"] = "Edit Event"; }
+<div class="row justify-content-center"><div class="col-lg-8">
+    <div class="card rd-card p-4">
+        <h1 class="h2 mb-3">Edit Event</h1>
+        <form asp-action="EditEvent" method="post" enctype="multipart/form-data">
+            <partial name="_EventForm" model="Model" />
+            <button class="btn btn-rd" type="submit">Save</button>
+            <a class="btn btn-link" asp-action="Events">Cancel</a>
+        </form>
+    </div>
+</div></div>

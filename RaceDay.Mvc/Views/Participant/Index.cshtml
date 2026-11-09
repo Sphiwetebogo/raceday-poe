@@ -1,0 +1,62 @@
+@model ParticipantDashboardVm
+@{
+    ViewData["Title"] = "My Athlete Profile";
+    var email = Context.Session.GetString("Email");
+}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="mb-0"><i class="bi bi-person-walking rd-title-icon"></i> My Athlete Profile</h1>
+        <div class="text-muted small">Signed in as @email</div>
+    </div>
+    <a class="btn btn-rd btn-sm" asp-action="Explore"><i class="bi bi-search"></i> Browse Events</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="rd-stat rd-stat-blue text-center">
+            <div class="rd-stat-num">@Model.Total</div>
+            <div class="fw-semibold">Total Enrolments</div>
+            <div class="text-muted small">Races you have signed up for</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="rd-stat rd-stat-green text-center">
+            <div class="rd-stat-num">@Model.Confirmed</div>
+            <div class="fw-semibold">Confirmed</div>
+            <div class="text-muted small">Enrolments paid and confirmed</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="rd-stat rd-stat-amber text-center">
+            <div class="rd-stat-num">@Model.Pending</div>
+            <div class="fw-semibold">Pending</div>
+            <div class="text-muted small">Still awaiting confirmation</div>
+        </div>
+    </div>
+</div>
+
+<h2 class="h4 mb-3"><i class="bi bi-card-checklist rd-title-icon"></i> My Enrolments</h2>
+@if (!Model.Rows.Any())
+{
+    <p class="text-muted">You have not entered any events yet. <a asp-action="Explore">Browse upcoming events</a>.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle rd-table">
+            <thead><tr><th>Event</th><th>Category</th><th>Enrolled On</th><th>Fee</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var r in Model.Rows)
+            {
+                <tr>
+                    <td><a class="rd-link" asp-controller="Events" asp-action="Details" asp-route-id="@r.Enrolment.EventId">@r.Enrolment.EventTitle</a></td>
+                    <td>@r.Enrolment.CategoryName</td>
+                    <td>@r.Enrolment.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                    <td>@(r.Fee.HasValue ? "R " + r.Fee.Value.ToString("0.00") : "-")</td>
+                    <td><partial name="_StatusBadge" model="r.Enrolment.PaymentStatus" /></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,78 @@
+@model ResultsPageVm
+@{ ViewData["Title"] = "Results"; }
+<h1>Results</h1>
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-6">
+        <select name="eventId" class="form-select" onchange="this.form.submit()" aria-label="Choose an event">
+            <option value="">Select an event...</option>
+            @foreach (var e in Model.Events)
+            {
+                <option value="@e.EventId" selected="@(Model.SelectedEventId == e.EventId)">@e.Title (@e.EventDate.ToString("dd MMM yyyy"))</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-rd" type="submit">View</button></div>
+</form>
+
+@if (!Model.SelectedEventId.HasValue)
+{
+    <p class="text-muted">Choose an event to capture or review results.</p>
+}
+else
+{
+    <h2 class="rd-section-title">Capture results</h2>
+    @if (!Model.EventHasPassed)
+    {
+        <div class="alert alert-info">Results can only be recorded after the event has taken place.</div>
+    }
+    @if (!Model.Pending.Any())
+    {
+        <p class="text-muted">Every active enrolment already has a result (or nobody has entered yet).</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle rd-table">
+                <thead><tr><th>Participant</th><th>Category</th><th>Finish time (hh:mm:ss)</th><th>Position</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var en in Model.Pending)
+                {
+                    <tr>
+                        <td>@en.ParticipantName</td>
+                        <td>@en.CategoryName</td>
+                        <td><input form="f@(en.EnrolmentId)" name="FinishTime" class="form-control form-control-sm" placeholder="00:45:30" pattern="\d{1,2}:\d{2}:\d{2}" required /></td>
+                        <td><input form="f@(en.EnrolmentId)" name="Position" type="number" min="1" class="form-control form-control-sm" required /></td>
+                        <td>
+                            <form id="f@(en.EnrolmentId)" asp-action="CaptureResult" method="post">
+                                <input type="hidden" name="EventId" value="@Model.SelectedEventId" />
+                                <input type="hidden" name="EnrolmentId" value="@en.EnrolmentId" />
+                                <button class="btn btn-sm btn-rd" type="submit" disabled="@(!Model.EventHasPassed)">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h2 class="rd-section-title mt-4">Captured results</h2>
+    @if (!Model.Results.Any())
+    {
+        <p class="text-muted">No results captured yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover rd-table">
+                <thead><tr><th>Pos</th><th>Participant</th><th>Category</th><th>Time</th></tr></thead>
+                <tbody>
+                @foreach (var r in Model.Results.OrderBy(r => r.Position))
+                {
+                    <tr><td><strong>@r.Position</strong></td><td>@r.ParticipantName</td><td>@r.CategoryName</td><td>@r.FinishTime</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+}

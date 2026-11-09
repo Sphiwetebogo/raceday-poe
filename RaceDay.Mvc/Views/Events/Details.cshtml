@@ -1,0 +1,71 @@
+@model EventResponse
+@{
+    ViewData["Title"] = Model.Title;
+    bool isParticipant = string.Equals(Context.Session.GetString("Role"), "Participant", StringComparison.OrdinalIgnoreCase);
+    bool open = Model.EventDate > DateTime.Now;
+}
+<div class="row g-4">
+    <div class="col-lg-7">
+        @if (!string.IsNullOrWhiteSpace(Model.BannerImageUrl))
+        {
+            <img src="@Model.BannerImageUrl" class="img-fluid rounded rd-detail-banner" alt="@Model.Title event banner" />
+        }
+        else
+        {
+            <div class="rd-banner rd-banner-placeholder rd-detail-banner rounded"><i class="bi bi-trophy"></i></div>
+        }
+    </div>
+    <div class="col-lg-5">
+        <span class="badge rd-type-badge rd-type-@Model.EventType.ToLowerInvariant() mb-2">@Model.EventType</span>
+        <h1>@Model.Title</h1>
+        <ul class="list-unstyled rd-facts">
+            <li><i class="bi bi-calendar3"></i> @Model.EventDate.ToString("dddd, dd MMMM yyyy")</li>
+            <li><i class="bi bi-geo-alt"></i> @Model.Location</li>
+            <li><i class="bi bi-signpost-split"></i> @Model.DistanceKM.ToString("0.##") km</li>
+            <li><i class="bi bi-person-badge"></i> Organised by @Model.OrganiserName</li>
+        </ul>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<h2 class="rd-section-title mt-4">Categories</h2>
+@if (!Model.Categories.Any())
+{
+    <p class="text-muted">No categories have been set up for this event yet.</p>
+}
+else if (isParticipant && open)
+{
+    <form asp-controller="Participant" asp-action="EnterEvent" method="post" class="card rd-card p-3">
+        <input type="hidden" name="eventId" value="@Model.EventId" />
+        <div class="mb-3">
+            @foreach (var c in Model.Categories)
+            {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="categoryId" id="cat@(c.CategoryId)" value="@c.CategoryId" />
+                    <label class="form-check-label" for="cat@(c.CategoryId)">
+                        <strong>@c.CategoryName</strong>
+                        <span class="text-muted">&ndash; @c.DistanceKM.ToString("0.##") km &middot; @(c.Fee == 0 ? "Free" : "R " + c.Fee.ToString("0.00"))</span>
+                    </label>
+                </div>
+            }
+        </div>
+        <button class="btn btn-rd-accent align-self-start" type="submit">Enter Event</button>
+    </form>
+}
+else
+{
+    @if (isParticipant && !open)
+    {
+        <div class="alert alert-secondary">This event has already taken place, so entries are closed.</div>
+    }
+    <ul class="list-group">
+        @foreach (var c in Model.Categories)
+        {
+            <li class="list-group-item d-flex justify-content-between">
+                <span><strong>@c.CategoryName</strong></span>
+                <span class="text-muted">@c.DistanceKM.ToString("0.##") km &middot; @(c.Fee == 0 ? "Free" : "R " + c.Fee.ToString("0.00"))</span>
+            </li>
+        }
+    </ul>
+}
+<a class="btn btn-link mt-3 ps-0" href="javascript:history.back()">&larr; Back</a>
