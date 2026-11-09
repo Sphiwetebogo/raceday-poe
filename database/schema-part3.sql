@@ -9,4 +9,4 @@ GO
 
 IF COL_LENGTH('Users', 'ProfileImageUrl') IS NULL
     ALTER TABLE Users ADD ProfileImageUrl NVARCHAR(500) NULL;
-GO
+GO 
