@@ -1,4 +1,4 @@
-# RaceDay
+# RaceDay 
 
 RaceDay lets **Organisers** publish running, walking and cycling events and capture results, and lets **Participants**
 browse events, enter a category, track their entries and view their results.
