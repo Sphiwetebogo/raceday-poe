@@ -1,4 +1,4 @@
-namespace RaceDay.Mvc.Models;
+namespace RaceDay.Mvc.Models; 
 
 // DTOs that mirror the RaceDay.Api (Part 2) request/response classes. JSON matching is case-insensitive.
 // Enums (EventType, PaymentStatus) travel as strings because the API uses JsonStringEnumConverter.
